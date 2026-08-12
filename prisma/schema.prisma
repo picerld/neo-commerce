@@ -1,0 +1,214 @@
+// Neo Commerce — single-vendor ecommerce with Midtrans payments.
+// Feature-folder API pattern & Prisma conventions borrowed from picedu-v1.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ---------------------------------------------------------------------------
+// Enums
+// ---------------------------------------------------------------------------
+
+enum UserRole {
+  admin
+  user
+}
+
+// Order lifecycle: pending_payment -> paid -> processing -> shipped -> completed.
+// pending_payment can also branch to expired/cancelled (stock restored); paid
+// can branch to refunded (stock restored, see webhook handler).
+enum OrderStatus {
+  pending_payment
+  paid
+  processing
+  shipped
+  completed
+  cancelled
+  expired
+  refunded
+}
+
+// Mirrors Midtrans `transaction_status` values as received via the
+// notification webhook — see lib/midtrans.ts.
+enum PaymentStatus {
+  pending
+  settlement
+  capture
+  deny
+  cancel
+  expire
+  refund
+  partial_refund
+}
+
+// ---------------------------------------------------------------------------
+// Users
+// ---------------------------------------------------------------------------
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  role         UserRole @default(user)
+  name         String
+  phone        String?
+  address      String?
+  createdAt    DateTime @default(now())
+
+  cartItems         CartItem[]
+  orders            Order[]
+  withdrawalRecords WithdrawalRecord[]
+
+  @@index([role])
+}
+
+// ---------------------------------------------------------------------------
+// Catalog
+// ---------------------------------------------------------------------------
+
+model Category {
+  id   String @id @default(cuid())
+  name String
+  slug String @unique
+
+  products Product[]
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  categoryId  String?
+  name        String
+  slug        String   @unique
+  description String?
+  /// price in smallest currency unit (whole Rupiah, no decimals)
+  price       Int
+  stock       Int      @default(0)
+  imageUrl    String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  category   Category?   @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  cartItems  CartItem[]
+  orderItems OrderItem[]
+
+  @@index([categoryId])
+  @@index([isActive])
+}
+
+// ---------------------------------------------------------------------------
+// Cart — one row per (user, product); no separate Cart model needed since a
+// cart is always implicitly scoped to its owning user.
+// ---------------------------------------------------------------------------
+
+model CartItem {
+  id        String   @id @default(cuid())
+  userId    String
+  productId String
+  quantity  Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@index([userId])
+}
+
+// ---------------------------------------------------------------------------
+// Orders — `orderNumber` doubles as the Midtrans `order_id`. Stock is
+// deducted at order creation (checkout) to prevent overselling while payment
+// is pending, and restored on expire/cancel/deny/refund — see
+// lib/orders/restore-stock.ts and app/api/webhooks/midtrans/route.ts.
+// ---------------------------------------------------------------------------
+
+model Order {
+  id              String      @id @default(cuid())
+  orderNumber     String      @unique
+  userId          String
+  status          OrderStatus @default(pending_payment)
+  subtotal        Int
+  shippingFee     Int         @default(0)
+  total           Int
+  recipientName   String
+  recipientPhone  String
+  shippingAddress String
+  trackingNumber  String?
+  paidAt          DateTime?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  user    User        @relation(fields: [userId], references: [id], onDelete: Restrict)
+  items   OrderItem[]
+  payment Payment?
+
+  @@index([userId])
+  @@index([status])
+}
+
+model OrderItem {
+  id               String @id @default(cuid())
+  orderId          String
+  productId        String
+  /// snapshot of product name/image/price at time of purchase — survives
+  /// later product edits or deletion
+  productName      String
+  productImageUrl  String?
+  price            Int
+  quantity         Int
+  subtotal         Int
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+
+  @@index([orderId])
+}
+
+// ---------------------------------------------------------------------------
+// Payments — one row per order, created alongside the Midtrans Snap
+// transaction at checkout and updated by the notification webhook.
+// ---------------------------------------------------------------------------
+
+model Payment {
+  id            String        @id @default(cuid())
+  orderId       String        @unique
+  midtransOrderId String      @unique
+  transactionId String?
+  paymentType   String?
+  status        PaymentStatus @default(pending)
+  grossAmount   Int
+  snapToken     String?
+  redirectUrl   String?
+  vaNumber      String?
+  rawPayload    Json?
+  paidAt        DateTime?
+  expiredAt     DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+// ---------------------------------------------------------------------------
+// Withdrawal ledger — bookkeeping only (no bank integration). Admin's
+// available platform balance = sum(paid+ order totals) - sum(refunded order
+// totals) - sum(withdrawal amounts). See lib/withdrawals/balance.ts.
+// ---------------------------------------------------------------------------
+
+model WithdrawalRecord {
+  id        String   @id @default(cuid())
+  adminId   String
+  amount    Int
+  note      String?
+  createdAt DateTime @default(now())
+
+  admin User @relation(fields: [adminId], references: [id], onDelete: Restrict)
+
+  @@index([adminId])
+}

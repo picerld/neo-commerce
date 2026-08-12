@@ -1,0 +1,22 @@
+name: neo-ecommerce
+
+services:
+  postgres:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: neoecommerce
+      POSTGRES_PASSWORD: neoecommerce
+      POSTGRES_DB: neoecommerce
+    ports:
+      - "5438:5432"
+    volumes:
+      - neo-ecommerce-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U neoecommerce -d neoecommerce"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  neo-ecommerce-postgres-data:
