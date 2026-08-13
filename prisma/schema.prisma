@@ -63,6 +63,7 @@ model User {
   cartItems         CartItem[]
   orders            Order[]
   withdrawalRecords WithdrawalRecord[]
+  reviews           Review[]
 
   @@index([role])
 }
@@ -96,9 +97,31 @@ model Product {
   category   Category?   @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   cartItems  CartItem[]
   orderItems OrderItem[]
+  reviews    Review[]
 
   @@index([categoryId])
   @@index([isActive])
+}
+
+// ---------------------------------------------------------------------------
+// Reviews — one review per (user, product); not restricted to verified
+// purchasers to keep scope simple. Aggregated into avgRating/reviewCount on
+// the public product serializer (see app/api/products/serialize.ts).
+// ---------------------------------------------------------------------------
+
+model Review {
+  id        String   @id @default(cuid())
+  productId String
+  userId    String
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, userId])
+  @@index([productId])
 }
 
 // ---------------------------------------------------------------------------

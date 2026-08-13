@@ -22,3 +22,15 @@ export type RegisterRequest = {
   password: string;
   phone: string;
 };
+
+export type UpdateProfileRequest = {
+  name: string;
+  phone: string;
+  address?: string;
+};
+
+export type ChangePasswordRequest = {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+};

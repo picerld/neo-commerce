@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { apiSuccess, apiErrorFromException } from "@/lib/api-response";
-import { serializeProduct, getSoldCountMap } from "./serialize";
+import { serializeProduct, getSoldCountMap, getRatingMap } from "./serialize";
 import type { Prisma } from "@/generated/prisma/client";
 
 // Public catalog listing — only active products, optionally filtered by
@@ -21,9 +21,12 @@ export async function GET(request: Request) {
       orderBy: { createdAt: "desc" },
     });
 
-    const soldCounts = await getSoldCountMap(products.map((p) => p.id));
+    const productIds = products.map((p) => p.id);
+    const [soldCounts, ratings] = await Promise.all([getSoldCountMap(productIds), getRatingMap(productIds)]);
 
-    return apiSuccess(products.map((product) => serializeProduct(product, soldCounts.get(product.id) ?? 0)));
+    return apiSuccess(
+      products.map((product) => serializeProduct(product, soldCounts.get(product.id) ?? 0, ratings.get(product.id))),
+    );
   } catch (error) {
     return apiErrorFromException(error);
   }

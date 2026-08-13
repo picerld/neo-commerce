@@ -22,16 +22,18 @@ export default function StorefrontFooter() {
   const { data: me } = useGetMe();
 
   return (
-    <footer className="border-t border-border/60 bg-card">
-      <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:grid-cols-3 md:px-6">
-        {HIGHLIGHTS.map(({ icon: Icon, text }) => (
-          <div key={text} className="flex items-center gap-3">
-            <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-accent text-accent-foreground">
-              <Icon className="size-4" />
-            </span>
-            <p className="text-sm font-semibold text-foreground/80">{text}</p>
-          </div>
-        ))}
+    <footer className="border-t-2 border-border/60 bg-card">
+      <div className="mx-auto max-w-7xl px-4 py-6 md:px-6">
+        <div className="grid gap-3 rounded-2xl border-2 border-border/60 bg-background p-5 shadow-[0_3px_0_0_var(--border)] sm:grid-cols-3">
+          {HIGHLIGHTS.map(({ icon: Icon, text }) => (
+            <div key={text} className="flex items-center gap-3">
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-accent text-accent-foreground">
+                <Icon className="size-4" />
+              </span>
+              <p className="text-sm font-semibold text-foreground/80">{text}</p>
+            </div>
+          ))}
+        </div>
       </div>
 
       <div className="border-t border-border/60 px-4 py-10 md:px-6">

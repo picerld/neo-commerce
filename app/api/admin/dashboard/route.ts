@@ -36,7 +36,7 @@ export async function GET() {
     const response: DashboardResponse = {
       balance,
       orderCounts,
-      lowStockProducts: lowStockProducts.map(serializeProduct),
+      lowStockProducts: lowStockProducts.map((product) => serializeProduct(product)),
       recentOrders: recentOrders.map(serializeOrderSummary),
     };
 

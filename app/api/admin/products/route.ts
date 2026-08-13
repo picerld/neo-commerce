@@ -14,7 +14,7 @@ export async function GET() {
       orderBy: { createdAt: "desc" },
     });
 
-    return apiSuccess(products.map(serializeProduct));
+    return apiSuccess(products.map((product) => serializeProduct(product)));
   } catch (error) {
     return apiErrorFromException(error);
   }

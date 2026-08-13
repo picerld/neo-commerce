@@ -11,6 +11,8 @@ export type ProductSummary = {
   isActive: boolean;
   category: CategorySummary | null;
   soldCount: number;
+  avgRating: number;
+  reviewCount: number;
   createdAt: string;
 };
 
