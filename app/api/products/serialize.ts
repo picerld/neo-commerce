@@ -13,6 +13,7 @@ export function serializeProduct(
     slug: product.slug,
     description: product.description,
     price: product.price,
+    compareAtPrice: product.compareAtPrice,
     stock: product.stock,
     imageUrl: product.imageUrl,
     isActive: product.isActive,

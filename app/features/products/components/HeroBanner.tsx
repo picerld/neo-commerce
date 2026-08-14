@@ -10,14 +10,30 @@ export default function HeroBanner() {
   const collage = (products ?? []).filter((p) => p.imageUrl).slice(0, 4);
 
   return (
-    <div className="grid gap-3 md:grid-cols-3">
-      <div className="relative overflow-hidden rounded-2xl border-2 border-border/60 bg-primary p-6 text-primary-foreground shadow-[0_4px_0_0_color-mix(in_oklab,var(--primary),black_18%)] sm:p-10 md:col-span-2">
+    <div className="grid animate-fade-in-up gap-3 md:grid-cols-3">
+      <div className="relative overflow-hidden rounded-3xl border-2 border-border/60 bg-gradient-to-br from-primary to-[color-mix(in_oklab,var(--primary),#7c3aed_35%)] p-6 text-primary-foreground shadow-[0_4px_0_0_color-mix(in_oklab,var(--primary),black_18%)] sm:p-10 md:col-span-2">
+        {/* Layered accent decoration — soft color blobs + dot-grid texture
+            behind the copy, so the banner reads as designed rather than a
+            flat color fill. Blobs sit outside the content's max-w column,
+            clipped by overflow-hidden on the panel. */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -top-16 -right-10 size-64 rounded-full bg-[#7c3aed]/40 blur-3xl"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -bottom-20 right-16 size-56 rounded-full bg-[#ec4899]/30 blur-3xl"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute top-1/2 -right-24 size-72 -translate-y-1/2 rounded-full bg-[#06b6d4]/20 blur-3xl"
+        />
         <div aria-hidden className="bg-dot-grid pointer-events-none absolute inset-0 text-white/10" />
         <div className="relative z-10 max-w-lg space-y-4">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-xs font-bold uppercase tracking-wide">
+          <span className="animate-pop-in inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-xs font-bold uppercase tracking-wide backdrop-blur-sm">
             <Sparkles className="size-3.5" /> Promo Hari Ini
           </span>
-          <h1 className="font-heading text-2xl font-extrabold tracking-tight sm:text-3xl">
+          <h1 className="font-heading text-2xl font-extrabold tracking-tight text-balance sm:text-3xl">
             Belanja kebutuhanmu, bayar aman, sampai tepat waktu.
           </h1>
           <div className="flex flex-wrap gap-4 pt-2 text-sm font-semibold text-primary-foreground/90">
@@ -39,7 +55,7 @@ export default function HeroBanner() {
               <Link
                 key={product.id}
                 href={`/products/${product.slug}`}
-                className="group relative overflow-hidden rounded-2xl border-2 border-border/60 bg-muted shadow-[0_3px_0_0_var(--border)]"
+                className="press-shadow group relative overflow-hidden rounded-2xl border-2 border-border/60 bg-muted shadow-[0_3px_0_0_var(--border)]"
               >
                 <Image
                   src={product.imageUrl!}

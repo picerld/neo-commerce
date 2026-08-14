@@ -10,10 +10,14 @@ export function serializeOrderSummary(order: OrderWithItems): OrderSummary {
     status: order.status,
     subtotal: order.subtotal,
     shippingFee: order.shippingFee,
+    courierName: order.courierName,
+    courierService: order.courierService,
     total: order.total,
     itemCount: order.items.reduce((sum, item) => sum + item.quantity, 0),
     createdAt: order.createdAt.toISOString(),
     paidAt: order.paidAt?.toISOString() ?? null,
+    previewImageUrl: order.items[0]?.productImageUrl ?? null,
+    previewProductName: order.items[0]?.productName ?? null,
     ...(order.user ? { customer: { id: order.user.id, name: order.user.name, email: order.user.email } } : {}),
   };
 }

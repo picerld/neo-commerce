@@ -16,6 +16,10 @@ export default function ProductCard({ product, isNew = false }: { product: Produ
   const router = useRouter();
   const { data: me } = useGetMe();
   const outOfStock = product.stock <= 0;
+  const hasDiscount = !!product.compareAtPrice && product.compareAtPrice > product.price;
+  const discountPercent = hasDiscount
+    ? Math.round((1 - product.price / product.compareAtPrice!) * 100)
+    : 0;
 
   const addToCartMutation = useAddToCart({
     mutationConfig: {
@@ -35,11 +39,17 @@ export default function ProductCard({ product, isNew = false }: { product: Produ
   };
 
   return (
-    <Link href={`/products/${product.slug}`} className="group">
-      <Card className="h-full gap-2 overflow-hidden p-0 shadow-[0_2px_0_0_var(--border)] transition-transform group-hover:-translate-y-0.5 group-hover:shadow-[0_3px_0_0_var(--border)]">
+    <Link href={`/products/${product.slug}`} className="group block">
+      <Card className="press-shadow h-full gap-2 overflow-hidden rounded-2xl p-0 shadow-[0_2px_0_0_var(--border)] transition-transform duration-150 group-hover:-translate-y-0.5 group-hover:shadow-[0_4px_0_0_var(--border)]">
         <div className="relative aspect-square w-full bg-muted">
           {product.imageUrl ? (
-            <Image src={product.imageUrl} alt={product.name} fill className="object-cover" unoptimized />
+            <Image
+              src={product.imageUrl}
+              alt={product.name}
+              fill
+              className="object-cover transition-transform duration-300 group-hover:scale-105"
+              unoptimized
+            />
           ) : (
             <div className="flex h-full items-center justify-center">
               <ImageOff className="size-8 text-muted-foreground" />
@@ -50,13 +60,22 @@ export default function ProductCard({ product, isNew = false }: { product: Produ
               <Badge variant="destructive">Stok Habis</Badge>
             </div>
           )}
-          {!outOfStock && product.stock <= 5 && (
-            <Badge variant="warning" className="absolute top-1.5 left-1.5 bg-warning text-warning-foreground">
-              Sisa {product.stock}
-            </Badge>
+          {!outOfStock && (
+            <div className="absolute top-1.5 left-1.5 flex flex-col items-start gap-1">
+              {hasDiscount && (
+                <Badge className="border-transparent bg-gradient-to-r from-destructive to-[#ff6b6b] text-destructive-foreground shadow-sm">
+                  -{discountPercent}%
+                </Badge>
+              )}
+              {product.stock <= 5 && (
+                <Badge variant="warning" className="bg-warning text-warning-foreground">
+                  Sisa {product.stock}
+                </Badge>
+              )}
+            </div>
           )}
           {isNew && (
-            <Badge className="absolute top-1.5 right-1.5 bg-primary text-primary-foreground">Baru</Badge>
+            <Badge className="absolute top-1.5 right-1.5 animate-pop-in bg-primary text-primary-foreground">Baru</Badge>
           )}
           {!outOfStock && (
             <button
@@ -64,7 +83,7 @@ export default function ProductCard({ product, isNew = false }: { product: Produ
               onClick={handleQuickAdd}
               disabled={addToCartMutation.isPending}
               aria-label="Tambah cepat ke keranjang"
-              className="absolute right-1.5 bottom-1.5 flex size-8 items-center justify-center rounded-full border-2 border-primary bg-primary text-primary-foreground opacity-0 shadow-[0_2px_0_0_color-mix(in_oklab,var(--primary),black_18%)] transition-opacity duration-150 group-hover:opacity-100 focus-visible:opacity-100 disabled:opacity-100"
+              className="absolute right-1.5 bottom-1.5 flex size-8 items-center justify-center rounded-full border-2 border-primary bg-primary text-primary-foreground opacity-100 shadow-[0_2px_0_0_color-mix(in_oklab,var(--primary),black_18%)] transition-all duration-150 active:scale-90 active:shadow-none sm:opacity-0 sm:group-hover:opacity-100 sm:focus-visible:opacity-100 disabled:opacity-100"
             >
               <Plus className="size-3.5" />
             </button>
@@ -72,6 +91,9 @@ export default function ProductCard({ product, isNew = false }: { product: Produ
         </div>
         <CardContent className="space-y-1 px-2.5 pb-2.5">
           <p className="line-clamp-2 min-h-8 text-[13px] leading-tight font-medium text-foreground/90">{product.name}</p>
+          {hasDiscount && (
+            <p className="text-[11px] text-muted-foreground line-through">{formatRupiah(product.compareAtPrice!)}</p>
+          )}
           <p className="font-heading text-sm font-extrabold text-primary">{formatRupiah(product.price)}</p>
           <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
             {product.reviewCount > 0 && (

@@ -112,7 +112,9 @@ export default function AdminOrderDetailContainer({ orderId }: { orderId: string
                 <span>{formatRupiah(order.subtotal)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Ongkir</span>
+                <span className="text-muted-foreground">
+                  Ongkir{order.courierName ? ` (${order.courierName}${order.courierService ? ` ${order.courierService}` : ""})` : ""}
+                </span>
                 <span>{formatRupiah(order.shippingFee)}</span>
               </div>
               <div className="flex justify-between border-t border-border/60 pt-2 text-base font-bold">

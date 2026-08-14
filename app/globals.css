@@ -8,7 +8,7 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans-ui), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-mono-ui), "Cascadia Code", "SF Mono", Menlo, Consolas, ui-monospace, monospace;
-  --font-heading: var(--font-sans-ui), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-heading-ui), var(--font-sans-ui), ui-sans-serif, system-ui, sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -170,6 +170,24 @@
   *::-webkit-scrollbar-thumb:hover {
     background-color: var(--muted-foreground);
   }
+  .maplibregl-popup-content {
+    @apply bg-transparent! shadow-none! p-0! rounded-none!;
+  }
+  .maplibregl-popup-tip {
+    @apply hidden!;
+  }
+  .maplibregl-ctrl-attrib {
+    @apply bg-background! text-muted-foreground! border-border! rounded-md! border! shadow-sm!;
+  }
+  .maplibregl-ctrl-attrib a {
+    @apply text-muted-foreground!;
+  }
+  .maplibregl-ctrl-attrib a:hover {
+    @apply text-foreground!;
+  }
+  .maplibregl-ctrl-attrib-button {
+    @apply bg-transparent! dark:invert;
+  }
 }
 
 @keyframes shake {
@@ -189,4 +207,57 @@
 .bg-dot-grid {
   background-image: radial-gradient(currentColor 1px, transparent 1px);
   background-size: 18px 18px;
+}
+
+/* Motion system — small, consistent entrance/feedback primitives reused
+   across the storefront instead of one-off transitions per component. */
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up {
+  animation: fade-in-up 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes pop-in {
+  0% { opacity: 0; transform: scale(0.6); }
+  70% { opacity: 1; transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+.animate-pop-in {
+  animation: pop-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes shimmer-sweep {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(100%); }
+}
+.animate-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, color-mix(in oklab, var(--foreground) 8%, transparent), transparent);
+  animation: shimmer-sweep 1.6s ease-in-out infinite;
+}
+
+/* Hard-shadow "press" feedback for tappable, non-<button> elements (cards,
+   icon chips) — mirrors the Button component's active:translate/shadow-none
+   so the whole app feels consistently physical on tap, not just on buttons. */
+.press-shadow {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.press-shadow:active {
+  transform: translateY(2px);
+  box-shadow: none !important;
+}
+
+/* Horizontal rails (product carousels) — snap-to-card scrolling reads as a
+   deliberate swipe gesture on mobile instead of loose free scroll. */
+.snap-rail {
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+}
+.snap-rail > * {
+  scroll-snap-align: start;
 }

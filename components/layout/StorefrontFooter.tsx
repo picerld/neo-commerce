@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { ShoppingBag, ShieldCheck, Truck, Wallet, Landmark, CreditCard, Smartphone } from "lucide-react";
+import { ShieldCheck, Truck, Wallet } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import Logo from "@/components/shared/Logo";
 import { useGetCategories } from "@/app/features/categories/api/getCategories";
 import { useGetMe } from "@/app/features/auth/api/getMe";
 
@@ -11,11 +13,8 @@ const HIGHLIGHTS = [
   { icon: Wallet, text: "Riwayat transaksi transparan" },
 ];
 
-const PAYMENT_METHODS = [
-  { icon: Landmark, label: "Transfer Bank" },
-  { icon: CreditCard, label: "Kartu Kredit" },
-  { icon: Smartphone, label: "E-Wallet" },
-];
+const BANK_METHODS = ["BCA", "Mandiri", "BNI", "BRI"];
+const EWALLET_METHODS = ["GoPay", "OVO", "DANA", "QRIS"];
 
 export default function StorefrontFooter() {
   const { data: categories } = useGetCategories();
@@ -24,10 +23,10 @@ export default function StorefrontFooter() {
   return (
     <footer className="border-t-2 border-border/60 bg-card">
       <div className="mx-auto max-w-7xl px-4 py-6 md:px-6">
-        <div className="grid gap-3 rounded-2xl border-2 border-border/60 bg-background p-5 shadow-[0_3px_0_0_var(--border)] sm:grid-cols-3">
+        <div className="grid gap-3 rounded-3xl border-2 border-border/60 bg-background p-5 shadow-[0_3px_0_0_var(--border)] sm:grid-cols-3">
           {HIGHLIGHTS.map(({ icon: Icon, text }) => (
             <div key={text} className="flex items-center gap-3">
-              <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-accent text-accent-foreground">
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground">
                 <Icon className="size-4" />
               </span>
               <p className="text-sm font-semibold text-foreground/80">{text}</p>
@@ -39,11 +38,12 @@ export default function StorefrontFooter() {
       <div className="border-t border-border/60 px-4 py-10 md:px-6">
         <div className="mx-auto grid max-w-7xl grid-cols-2 gap-8 sm:grid-cols-4">
           <div className="col-span-2 space-y-2 sm:col-span-1">
-            <Link href="/" className="flex items-center gap-1.5 font-heading font-extrabold text-foreground">
-              <ShoppingBag className="size-4 text-primary" /> Neo Commerce
+            <Link href="/" className="inline-flex">
+              <Logo size="sm" />
             </Link>
             <p className="text-xs text-muted-foreground">
-              Belanja kebutuhanmu dengan mudah, bayar aman lewat Midtrans, dan pantau pesanan sampai tujuan.
+              Belanja online terpercaya — pembayaran terenkripsi lewat Midtrans, pesanan dikemas rapi, dan status
+              kirimanmu bisa dipantau sampai depan pintu.
             </p>
           </div>
 
@@ -98,15 +98,27 @@ export default function StorefrontFooter() {
             </ul>
           </div>
 
-          <div className="space-y-2">
-            <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Pembayaran</p>
-            <ul className="space-y-1.5 text-sm">
-              {PAYMENT_METHODS.map(({ icon: Icon, label }) => (
-                <li key={label} className="flex items-center gap-1.5 text-foreground/80">
-                  <Icon className="size-3.5 text-muted-foreground" /> {label}
-                </li>
-              ))}
-            </ul>
+          <div className="space-y-3">
+            <div className="space-y-1.5">
+              <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Transfer Bank</p>
+              <div className="flex flex-wrap gap-1.5">
+                {BANK_METHODS.map((label) => (
+                  <Badge key={label} variant="outline">
+                    {label}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">E-Wallet & QRIS</p>
+              <div className="flex flex-wrap gap-1.5">
+                {EWALLET_METHODS.map((label) => (
+                  <Badge key={label} variant="secondary">
+                    {label}
+                  </Badge>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>

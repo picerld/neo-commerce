@@ -136,7 +136,7 @@ export default function SearchResultsContainer() {
   );
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[240px_1fr]">
+    <div className="animate-fade-in-up grid gap-6 lg:grid-cols-[240px_1fr]">
       <aside className="hidden lg:block">
         <div className="sticky top-24 rounded-2xl border-2 border-border/60 bg-card p-4 shadow-[0_3px_0_0_var(--border)]">{filterPanel}</div>
       </aside>
@@ -151,22 +151,22 @@ export default function SearchResultsContainer() {
           </div>
 
           <details className="lg:hidden">
-            <summary className="flex cursor-pointer list-none items-center gap-1.5 rounded-lg border-2 border-border bg-background px-3 py-1.5 text-xs font-bold shadow-[0_2px_0_0_var(--border)]">
+            <summary className="press-shadow flex cursor-pointer list-none items-center gap-1.5 rounded-full border-2 border-border bg-background px-3 py-1.5 text-xs font-bold shadow-[0_2px_0_0_var(--border)]">
               <SlidersHorizontal className="size-3.5" /> Filter
             </summary>
             <div className="mt-3 rounded-2xl border-2 border-border/60 bg-card p-4 shadow-[0_3px_0_0_var(--border)]">{filterPanel}</div>
           </details>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2 border-b border-border/60 pb-3">
-          <span className="text-xs font-semibold text-muted-foreground">Urutkan:</span>
+        <div className="snap-rail flex flex-nowrap items-center gap-2 overflow-x-auto border-b border-border/60 pb-3">
+          <span className="shrink-0 text-xs font-semibold text-muted-foreground">Urutkan:</span>
           {SORT_OPTIONS.map((option) => (
             <button
               key={option.value}
               type="button"
               onClick={() => setParam("sort", option.value === "terbaru" ? undefined : option.value)}
               className={cn(
-                "rounded-full border-2 px-3 py-1 text-xs font-bold transition-colors",
+                "shrink-0 rounded-full border-2 px-3 py-1 text-xs font-bold transition-colors active:scale-95",
                 sort === option.value ? "border-primary bg-secondary text-secondary-foreground" : "border-border/60 bg-background text-muted-foreground hover:bg-muted",
               )}
             >

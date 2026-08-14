@@ -36,10 +36,16 @@ export type OrderSummary = {
   status: OrderStatus;
   subtotal: number;
   shippingFee: number;
+  courierName: string | null;
+  courierService: string | null;
   total: number;
   itemCount: number;
   createdAt: string;
   paidAt: string | null;
+  /** First item on the order — enough for a list-row thumbnail without a
+   * separate per-order fetch (the items are already loaded for itemCount). */
+  previewImageUrl: string | null;
+  previewProductName: string | null;
   customer?: { id: string; name: string; email: string };
 };
 
@@ -56,6 +62,7 @@ export type CheckoutRequest = {
   recipientName: string;
   recipientPhone: string;
   shippingAddress: string;
+  courierCode: string;
 };
 
 export type CheckoutResponse = {

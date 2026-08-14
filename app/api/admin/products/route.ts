@@ -41,6 +41,7 @@ export async function POST(request: Request) {
         categoryId: data.categoryId,
         description: data.description || null,
         price: data.price,
+        compareAtPrice: data.compareAtPrice,
         stock: data.stock,
         imageUrl: data.imageUrl || null,
         isActive: data.isActive,

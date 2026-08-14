@@ -34,13 +34,13 @@ export default function RegisterScreen() {
   });
 
   return (
-    <div className="mx-auto w-full max-w-sm">
+    <div className="mx-auto w-full max-w-sm animate-fade-in-up">
       <div className="mb-8 text-center">
         <h1 className="font-heading text-3xl font-extrabold tracking-tight">Daftar Akun</h1>
         <p className="mt-2 text-muted-foreground">Buat akun untuk mulai belanja.</p>
       </div>
 
-      <Card className="p-6">
+      <Card className="rounded-2xl p-6">
         <form
           className="space-y-6"
           onSubmit={async (event) => {

@@ -88,6 +88,8 @@ model Product {
   description String?
   /// price in smallest currency unit (whole Rupiah, no decimals)
   price       Int
+  /// original "was" price shown struck-through when greater than `price`; null = no discount
+  compareAtPrice Int?
   stock       Int      @default(0)
   imageUrl    String?
   isActive    Boolean  @default(true)
@@ -158,6 +160,8 @@ model Order {
   status          OrderStatus @default(pending_payment)
   subtotal        Int
   shippingFee     Int         @default(0)
+  courierName     String?
+  courierService  String?
   total           Int
   recipientName   String
   recipientPhone  String

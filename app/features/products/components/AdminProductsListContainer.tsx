@@ -62,6 +62,9 @@ export default function AdminProductsListContainer() {
                     <p className="truncate text-sm font-bold">{product.name}</p>
                     <p className="text-xs text-muted-foreground">
                       {product.category?.name ?? "Tanpa kategori"} · {formatRupiah(product.price)}
+                      {product.compareAtPrice && product.compareAtPrice > product.price && (
+                        <> (dulu {formatRupiah(product.compareAtPrice)})</>
+                      )}
                     </p>
                   </div>
                 </div>

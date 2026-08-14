@@ -3,6 +3,7 @@ import crypto from "node:crypto";
 const isProduction = process.env.MIDTRANS_IS_PRODUCTION === "true";
 
 const SNAP_BASE_URL = isProduction ? "https://app.midtrans.com/snap/v1" : "https://app.sandbox.midtrans.com/snap/v1";
+const CORE_API_BASE_URL = isProduction ? "https://api.midtrans.com/v2" : "https://api.sandbox.midtrans.com/v2";
 
 function serverKey() {
   const key = process.env.MIDTRANS_SERVER_KEY;
@@ -72,6 +73,26 @@ export async function createSnapTransaction(params: CreateSnapTransactionParams)
 
   const json = (await res.json()) as { token: string; redirect_url: string };
   return { token: json.token, redirectUrl: json.redirect_url };
+}
+
+/** Fetches a transaction's current status directly from Midtrans — see
+ * https://docs.midtrans.com/reference/get-transaction-status. Same response
+ * shape as the notification webhook payload, so it can be run through
+ * `mapTransactionStatus` the same way. Used as a manual fallback for
+ * environments where Midtrans can't reach our notification webhook (e.g.
+ * local dev on localhost) — a real "check status" action, not just a dev
+ * convenience. */
+export async function getTransactionStatus(midtransOrderId: string): Promise<MidtransNotificationPayload> {
+  const res = await fetch(`${CORE_API_BASE_URL}/${encodeURIComponent(midtransOrderId)}/status`, {
+    headers: { Accept: "application/json", Authorization: authHeader() },
+  });
+
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`Midtrans get status failed (${res.status}): ${body}`);
+  }
+
+  return (await res.json()) as MidtransNotificationPayload;
 }
 
 export type MidtransNotificationPayload = {

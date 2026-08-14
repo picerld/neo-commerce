@@ -6,6 +6,7 @@ export type ProductSummary = {
   slug: string;
   description: string | null;
   price: number;
+  compareAtPrice: number | null;
   stock: number;
   imageUrl: string | null;
   isActive: boolean;
@@ -26,6 +27,7 @@ export type CreateProductRequest = {
   categoryId: string | null;
   description: string;
   price: number;
+  compareAtPrice: number | null;
   stock: number;
   imageUrl: string;
   isActive: boolean;

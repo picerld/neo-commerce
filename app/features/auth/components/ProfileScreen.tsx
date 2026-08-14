@@ -1,8 +1,9 @@
 "use client";
 
+import * as React from "react";
 import { useForm } from "@tanstack/react-form";
 import { toast } from "sonner";
-import { KeyRound, Mail, ShieldCheck, User as UserIcon } from "lucide-react";
+import { KeyRound, Mail, MapPin, ShieldCheck, User as UserIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -11,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Skeleton } from "@/components/ui/skeleton";
 import ErrorState from "@/components/shared/ErrorState";
+import LocationPickerDialog from "@/components/shared/LocationPickerDialog";
 import { useGetMe } from "../api/getMe";
 import { useUpdateProfile } from "../api/updateProfile";
 import { useChangePassword } from "../api/changePassword";
@@ -35,8 +37,8 @@ export default function ProfileScreen() {
   }
 
   return (
-    <div className="space-y-6">
-      <Card className="flex-row items-center gap-4 p-5 sm:p-6">
+    <div className="animate-fade-in-up space-y-6">
+      <Card className="flex-row items-center gap-4 rounded-2xl p-5 sm:p-6">
         <span className="flex size-16 shrink-0 items-center justify-center rounded-full border-2 border-primary bg-secondary text-xl font-extrabold text-secondary-foreground shadow-[0_2px_0_0_var(--border)]">
           {me.name?.[0]?.toUpperCase() ?? "?"}
         </span>
@@ -62,6 +64,7 @@ export default function ProfileScreen() {
 }
 
 function ProfileInfoForm({ me }: { me: UserSummary }) {
+  const [mapOpen, setMapOpen] = React.useState(false);
   const updateMutation = useUpdateProfile({
     mutationConfig: {
       onSuccess: () => toast.success("Profil berhasil diperbarui"),
@@ -76,7 +79,7 @@ function ProfileInfoForm({ me }: { me: UserSummary }) {
   });
 
   return (
-    <Card className="p-5 sm:p-6">
+    <Card className="rounded-2xl p-5 sm:p-6">
       <CardHeader className="mb-2 px-0">
         <CardTitle className="flex items-center gap-2">
           <UserIcon className="size-4 text-primary" /> Info Akun
@@ -146,7 +149,16 @@ function ProfileInfoForm({ me }: { me: UserSummary }) {
                 const isInvalid = field.state.meta.isTouched && errors.length > 0;
                 return (
                   <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Alamat Pengiriman</FieldLabel>
+                    <div className="flex items-center justify-between gap-2">
+                      <FieldLabel htmlFor={field.name}>Alamat Pengiriman</FieldLabel>
+                      <button
+                        type="button"
+                        onClick={() => setMapOpen(true)}
+                        className="press-shadow flex shrink-0 items-center gap-1 rounded-full border-2 border-primary/30 bg-primary/10 px-2.5 py-1 text-xs font-bold text-primary transition-colors hover:bg-primary/15"
+                      >
+                        <MapPin className="size-3.5" /> Pilih di Peta
+                      </button>
+                    </div>
                     <Textarea
                       id={field.name}
                       value={field.state.value}
@@ -157,6 +169,7 @@ function ProfileInfoForm({ me }: { me: UserSummary }) {
                       placeholder="Nama jalan, nomor rumah, kota, kode pos"
                     />
                     {isInvalid && <FieldError errors={errors} />}
+                    <LocationPickerDialog open={mapOpen} onOpenChange={setMapOpen} onConfirm={({ address }) => field.handleChange(address)} />
                   </Field>
                 );
               }}
@@ -190,7 +203,7 @@ function ChangePasswordForm() {
   });
 
   return (
-    <Card className="h-fit p-5 sm:p-6">
+    <Card className="h-fit rounded-2xl p-5 sm:p-6">
       <CardHeader className="mb-2 px-0">
         <CardTitle className="flex items-center gap-2">
           <KeyRound className="size-4 text-primary" /> Ubah Password

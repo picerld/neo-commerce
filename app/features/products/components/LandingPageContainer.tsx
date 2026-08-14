@@ -23,21 +23,9 @@ const RAIL_SIZE = 8;
 const MIN_PREVIEW_AFTER_DEDUPE = 6;
 
 const RAIL_ACCENTS = {
-  destructive: {
-    panel: "border-destructive/30 bg-destructive/5 shadow-[0_3px_0_0_color-mix(in_oklab,var(--destructive),transparent_70%)]",
-    header: "bg-destructive text-destructive-foreground",
-    link: "text-destructive-foreground/80 hover:text-destructive-foreground",
-  },
-  primary: {
-    panel: "border-primary/30 bg-primary/5 shadow-[0_3px_0_0_color-mix(in_oklab,var(--primary),transparent_70%)]",
-    header: "bg-primary text-primary-foreground",
-    link: "text-primary-foreground/80 hover:text-primary-foreground",
-  },
-  warning: {
-    panel: "border-warning/30 bg-warning/5 shadow-[0_3px_0_0_color-mix(in_oklab,var(--warning),transparent_70%)]",
-    header: "bg-warning text-warning-foreground",
-    link: "text-warning-foreground/80 hover:text-warning-foreground",
-  },
+  destructive: { iconBg: "bg-destructive/10", iconColor: "text-destructive", link: "text-destructive hover:text-destructive/80" },
+  primary: { iconBg: "bg-primary/10", iconColor: "text-primary", link: "text-primary hover:text-primary/80" },
+  warning: { iconBg: "bg-warning/15", iconColor: "text-warning", link: "text-warning hover:text-warning/80" },
 } as const;
 
 function ProductRail({
@@ -61,19 +49,34 @@ function ProductRail({
 }) {
   const styles = RAIL_ACCENTS[accent];
   return (
-    <div className={cn("overflow-hidden rounded-2xl border-2", styles.panel)}>
-      <div className={cn("flex items-center justify-between gap-2 px-4 py-2.5 sm:px-5", styles.header)}>
-        <h2 className="flex items-center gap-1.5 font-heading text-sm font-extrabold tracking-tight sm:text-base">
-          <Icon className="size-4.5 sm:size-5" /> {title}
-        </h2>
-        <Link href={href} className={cn("flex items-center gap-1 text-[11px] font-semibold sm:text-xs", styles.link)}>
-          Lihat Semua <ArrowRight className="size-3" />
+    <div className="animate-fade-in-up space-y-3">
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2.5">
+          <span className={cn("flex size-9 shrink-0 items-center justify-center rounded-xl sm:size-10", styles.iconBg)}>
+            <Icon className={cn("size-4.5 sm:size-5", styles.iconColor)} />
+          </span>
+          <div className="min-w-0">
+            <h2 className="font-heading text-sm font-extrabold tracking-tight sm:text-base">{title}</h2>
+            <p className="truncate text-xs text-muted-foreground">{subtitle}</p>
+          </div>
+        </div>
+        <Link
+          href={href}
+          className={cn(
+            "group/link flex shrink-0 items-center gap-1 text-[11px] font-semibold transition-transform sm:text-xs",
+            styles.link,
+          )}
+        >
+          Lihat Semua <ArrowRight className="size-3 transition-transform group-hover/link:translate-x-0.5" />
         </Link>
       </div>
-      <p className="px-4 pt-3 text-xs text-muted-foreground sm:px-5">{subtitle}</p>
-      <div className="flex gap-3 overflow-x-auto p-4 sm:p-5">
-        {products.map((product) => (
-          <div key={product.id} className={featured ? "w-40 shrink-0 sm:w-48" : "w-36 shrink-0 sm:w-44"}>
+      <div className="snap-rail flex gap-3 overflow-x-auto pb-1">
+        {products.map((product, i) => (
+          <div
+            key={product.id}
+            className={cn("animate-fade-in-up", featured ? "w-40 shrink-0 sm:w-48" : "w-36 shrink-0 sm:w-44")}
+            style={{ animationDelay: `${Math.min(i, 8) * 40}ms` }}
+          >
             <ProductCard product={product} isNew={markNew} />
           </div>
         ))}

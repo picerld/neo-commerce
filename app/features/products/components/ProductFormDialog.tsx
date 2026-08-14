@@ -64,6 +64,7 @@ export default function ProductFormDialog({ open, onOpenChange, product }: Produ
       categoryId: NO_CATEGORY,
       description: "",
       price: 0,
+      compareAtPrice: null as number | null,
       stock: 0,
       imageUrl: "",
       isActive: true,
@@ -86,6 +87,7 @@ export default function ProductFormDialog({ open, onOpenChange, product }: Produ
       categoryId: product?.category?.id ?? NO_CATEGORY,
       description: product?.description ?? "",
       price: product?.price ?? 0,
+      compareAtPrice: product?.compareAtPrice ?? null,
       stock: product?.stock ?? 0,
       imageUrl: product?.imageUrl ?? "",
       isActive: product?.isActive ?? true,
@@ -193,6 +195,31 @@ export default function ProductFormDialog({ open, onOpenChange, product }: Produ
                 }}
               </form.Field>
 
+              <form.Field name="compareAtPrice">
+                {(field) => {
+                  const errors = field.state.meta.errors;
+                  const isInvalid = field.state.meta.isTouched && errors.length > 0;
+                  return (
+                    <Field data-invalid={isInvalid}>
+                      <FieldLabel htmlFor={field.name}>Harga Coret (opsional)</FieldLabel>
+                      <Input
+                        id={field.name}
+                        type="number"
+                        min={0}
+                        value={field.state.value ?? ""}
+                        onBlur={field.handleBlur}
+                        onChange={(e) => field.handleChange(e.target.value === "" ? null : Number(e.target.value))}
+                        disabled={pending}
+                        aria-invalid={isInvalid}
+                      />
+                      {isInvalid && <FieldError errors={errors} />}
+                    </Field>
+                  );
+                }}
+              </form.Field>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
               <form.Field name="stock">
                 {(field) => {
                   const errors = field.state.meta.errors;

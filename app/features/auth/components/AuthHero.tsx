@@ -1,4 +1,5 @@
-import { ShoppingBag, ShieldCheck, Truck, Wallet } from "lucide-react";
+import { ShieldCheck, Truck, Wallet } from "lucide-react";
+import Logo from "@/components/shared/Logo";
 
 const FEATURES = [
   { icon: ShieldCheck, text: "Pembayaran aman lewat Midtrans" },
@@ -8,14 +9,11 @@ const FEATURES = [
 
 export default function AuthHero() {
   return (
-    <div className="relative hidden flex-col justify-between overflow-hidden bg-primary p-10 text-primary-foreground md:flex">
+    <div className="relative hidden flex-col justify-between overflow-hidden bg-gradient-to-br from-primary to-[color-mix(in_oklab,var(--primary),#7c3aed_35%)] p-10 text-primary-foreground md:flex">
       <div aria-hidden className="bg-dot-grid pointer-events-none absolute inset-0 text-white/10" />
 
-      <div className="relative z-10 flex items-center gap-2.5">
-        <div className="flex size-10 items-center justify-center rounded-lg bg-white/15">
-          <ShoppingBag className="size-5" />
-        </div>
-        <p className="font-heading text-lg font-extrabold tracking-wide">Neo Commerce</p>
+      <div className="relative z-10">
+        <Logo size="lg" />
       </div>
 
       <div className="relative z-10 space-y-6">

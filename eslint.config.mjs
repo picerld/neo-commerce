@@ -13,6 +13,11 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
     "generated/**",
+    // Vendored shadcn/mapcn registry component — same "generated, not
+    // hand-authored" status as generated/**, and its imperative MapLibre
+    // integration code (latest-ref callbacks, listener setup in useMemo)
+    // predates this project's stricter react-hooks/refs rule.
+    "components/ui/map.tsx",
   ]),
 ]);
 

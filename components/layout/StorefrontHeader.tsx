@@ -1,12 +1,12 @@
 "use client";
 
-import * as React from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { ShoppingBag, Search, ShoppingCart, LogOut, Package, ChevronsUpDown, ShieldCheck, Truck, UserRound } from "lucide-react";
+import { ShoppingCart, LogOut, Package, ChevronsUpDown, ShieldCheck, Truck, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
+import Logo from "@/components/shared/Logo";
+import HeaderSearchBar from "./HeaderSearchBar";
 import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
@@ -31,18 +31,6 @@ export default function StorefrontHeader() {
   const { data: categories } = useGetCategories();
 
   const isSearchPage = pathname === "/search";
-
-  // Keeps the search box in sync with the URL (e.g. after a nav or back/
-  // forward) without an effect — React's recommended pattern for adjusting
-  // state during render in response to a prop/derived-value change.
-  const searchFromUrl = isSearchPage ? (searchParams.get("q") ?? "") : "";
-  const [search, setSearch] = React.useState(searchFromUrl);
-  const [syncedSearch, setSyncedSearch] = React.useState(searchFromUrl);
-  if (searchFromUrl !== syncedSearch) {
-    setSyncedSearch(searchFromUrl);
-    setSearch(searchFromUrl);
-  }
-
   const activeCategory = isSearchPage ? (searchParams.get("category") ?? undefined) : undefined;
 
   const logoutMutation = useLogout({
@@ -53,12 +41,6 @@ export default function StorefrontHeader() {
       },
     },
   });
-
-  const handleSearch = (event: React.FormEvent) => {
-    event.preventDefault();
-    const query = search.trim();
-    router.push(query ? `/search?q=${encodeURIComponent(query)}` : "/search");
-  };
 
   return (
     <header className="sticky top-0 z-40 border-b-2 border-border/60 bg-primary text-primary-foreground">
@@ -76,30 +58,11 @@ export default function StorefrontHeader() {
       </div>
 
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-3 px-4 md:gap-6 md:px-6">
-        <Link href="/" className="flex shrink-0 items-center gap-2">
-          <div className="flex size-9 items-center justify-center rounded-lg bg-white/15">
-            <ShoppingBag className="size-4.5" />
-          </div>
-          <span className="hidden font-heading text-base font-extrabold tracking-tight sm:inline">Neo Commerce</span>
+        <Link href="/" className="shrink-0">
+          <Logo wordmarkClassName="hidden sm:inline" />
         </Link>
 
-        <form onSubmit={handleSearch} className="min-w-0 flex-1">
-          <div className="flex h-10 items-stretch overflow-hidden rounded-lg border-2 border-transparent bg-white shadow-[0_2px_0_0_color-mix(in_oklab,var(--primary),black_30%)] transition-colors focus-within:border-white">
-            <Input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Cari di Neo Commerce"
-              className="h-full flex-1 rounded-none border-transparent bg-transparent text-foreground shadow-none focus-visible:border-transparent focus-visible:ring-0"
-            />
-            <button
-              type="submit"
-              aria-label="Cari"
-              className="flex w-12 shrink-0 items-center justify-center bg-[color-mix(in_oklab,var(--primary),black_12%)] text-primary-foreground transition-colors hover:brightness-110"
-            >
-              <Search className="size-4" />
-            </button>
-          </div>
-        </form>
+        <HeaderSearchBar />
 
         <div className="flex shrink-0 items-center gap-2">
           {meLoading ? (
@@ -108,12 +71,12 @@ export default function StorefrontHeader() {
             <>
               <Link
                 href="/cart"
-                className="relative flex size-10 items-center justify-center rounded-lg transition-colors hover:bg-white/10"
+                className="relative flex size-10 items-center justify-center rounded-lg transition-colors duration-150 hover:bg-white/10 active:scale-90"
                 aria-label="Keranjang"
               >
                 <ShoppingCart className="size-5" />
                 {!!cart?.itemCount && (
-                  <span className="absolute top-0.5 right-0.5 flex size-4.5 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground">
+                  <span className="absolute top-0.5 right-0.5 flex size-4.5 animate-pop-in items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground">
                     {cart.itemCount > 9 ? "9+" : cart.itemCount}
                   </span>
                 )}
@@ -185,7 +148,7 @@ export default function StorefrontHeader() {
             <Link
               href="/search"
               className={cn(
-                "shrink-0 rounded-md px-3 py-1 text-xs font-semibold transition-colors",
+                "shrink-0 rounded-full px-3 py-1 text-xs font-semibold transition-colors active:scale-95",
                 isSearchPage && !activeCategory ? "bg-secondary text-secondary-foreground font-bold" : "text-muted-foreground hover:bg-muted hover:text-foreground",
               )}
             >
@@ -196,7 +159,7 @@ export default function StorefrontHeader() {
                 key={category.id}
                 href={`/search?category=${category.slug}`}
                 className={cn(
-                  "shrink-0 rounded-md px-3 py-1 text-xs font-semibold transition-colors",
+                  "shrink-0 rounded-full px-3 py-1 text-xs font-semibold transition-colors active:scale-95",
                   activeCategory === category.slug ? "bg-secondary text-secondary-foreground font-bold" : "text-muted-foreground hover:bg-muted hover:text-foreground",
                 )}
               >

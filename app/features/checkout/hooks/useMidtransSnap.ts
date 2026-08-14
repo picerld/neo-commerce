@@ -6,6 +6,7 @@ declare global {
   interface Window {
     snap?: {
       pay: (token: string, options?: MidtransSnapCallbacks) => void;
+      embed: (token: string, options: MidtransSnapCallbacks & { embedId: string }) => void;
     };
   }
 }
@@ -52,5 +53,14 @@ export function useMidtransSnap() {
     window.snap?.pay(token, callbacks);
   }, []);
 
-  return { isReady, pay };
+  // Renders the Snap form inline into a container element instead of a
+  // floating popup — the iframe's own content is still Midtrans-styled
+  // (required for PCI-DSS card handling), but the surrounding page chrome
+  // around it is entirely ours, so it reads as part of the app instead of
+  // a foreign overlay.
+  const embed = React.useCallback((token: string, embedId: string, callbacks?: MidtransSnapCallbacks) => {
+    window.snap?.embed(token, { embedId, ...callbacks });
+  }, []);
+
+  return { isReady, pay, embed };
 }

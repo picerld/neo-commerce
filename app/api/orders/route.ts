@@ -5,10 +5,9 @@ import { BadRequestError, ConflictError } from "@/lib/errors";
 import { checkoutFormSchema } from "@/app/features/orders/forms/checkout";
 import { generateOrderNumber } from "@/lib/orders/order-number";
 import { createSnapTransaction } from "@/lib/midtrans";
+import { getCourierByCode } from "@/lib/shipping/couriers";
 import { serializeOrderDetail, serializeOrderSummary } from "./serialize";
 import type { CheckoutResponse } from "@/app/features/orders/types/order.type";
-
-const SHIPPING_FEE = 15000;
 
 export async function GET() {
   try {
@@ -37,6 +36,11 @@ export async function POST(request: Request) {
     const body = await request.json();
     const data = checkoutFormSchema.parse(body);
 
+    const courier = getCourierByCode(data.courierCode);
+    if (!courier) {
+      throw new BadRequestError("Kurir tidak valid");
+    }
+
     const cartItems = await prisma.cartItem.findMany({
       where: { userId: session.userId },
       include: { product: true },
@@ -52,7 +56,7 @@ export async function POST(request: Request) {
     }
 
     const subtotal = cartItems.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
-    const total = subtotal + SHIPPING_FEE;
+    const total = subtotal + courier.price;
     const orderNumber = generateOrderNumber();
 
     const user = await prisma.user.findUniqueOrThrow({ where: { id: session.userId } });
@@ -68,7 +72,7 @@ export async function POST(request: Request) {
           quantity: item.quantity,
           name: item.product.name,
         })),
-        { id: "shipping", price: SHIPPING_FEE, quantity: 1, name: "Ongkos Kirim" },
+        { id: "shipping", price: courier.price, quantity: 1, name: `Ongkos Kirim (${courier.name} ${courier.service})` },
       ],
     });
 
@@ -88,7 +92,9 @@ export async function POST(request: Request) {
           orderNumber,
           userId: session.userId,
           subtotal,
-          shippingFee: SHIPPING_FEE,
+          shippingFee: courier.price,
+          courierName: courier.name,
+          courierService: courier.service,
           total,
           recipientName: data.recipientName,
           recipientPhone: data.recipientPhone,

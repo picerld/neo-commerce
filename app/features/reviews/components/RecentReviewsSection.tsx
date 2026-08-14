@@ -25,16 +25,16 @@ export default function RecentReviewsSection() {
   if (!reviews || reviews.length === 0) return null;
 
   return (
-    <div className="space-y-3">
+    <div className="animate-fade-in-up space-y-3">
       <h2 className="flex items-center gap-1.5 font-heading text-lg font-extrabold tracking-tight">
         <MessagesSquare className="size-5 text-primary" /> Ulasan Terbaru dari Pembeli
       </h2>
-      <div className="flex gap-3 overflow-x-auto pb-1">
+      <div className="snap-rail flex gap-3 overflow-x-auto pb-1">
         {reviews.map((review) => (
           <Link
             key={review.id}
             href={`/products/${review.productSlug}`}
-            className="w-72 shrink-0 space-y-2.5 rounded-2xl border-2 border-border/60 bg-card p-4 shadow-[0_3px_0_0_var(--border)] transition-transform hover:-translate-y-0.5"
+            className="press-shadow w-72 shrink-0 space-y-2.5 rounded-2xl border-2 border-border/60 bg-card p-4 shadow-[0_3px_0_0_var(--border)] transition-transform hover:-translate-y-0.5"
           >
             <div className="flex items-center gap-2.5">
               <div className="relative size-10 shrink-0 overflow-hidden rounded-lg border border-border/60 bg-muted">
