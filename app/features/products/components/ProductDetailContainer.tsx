@@ -132,7 +132,7 @@ export default function ProductDetailContainer({ slug }: { slug: string }) {
               </div>
             )}
             {!outOfStock && hasDiscount && (
-              <Badge className="absolute top-3 left-3 border-transparent bg-gradient-to-r from-destructive to-[#ff6b6b] text-sm text-destructive-foreground shadow-sm">
+              <Badge variant="destructive" className="absolute top-3 left-3 bg-destructive text-sm text-destructive-foreground shadow-sm">
                 -{discountPercent}%
               </Badge>
             )}
@@ -151,11 +151,11 @@ export default function ProductDetailContainer({ slug }: { slug: string }) {
 
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
               {product.reviewCount > 0 ? (
-                <div className="flex items-center gap-1.5">
+                <a href="#ulasan" className="flex items-center gap-1.5 hover:underline">
                   <StarRow rating={product.avgRating} size="size-4" />
                   <span className="font-bold">{product.avgRating.toFixed(1)}</span>
                   <span className="text-muted-foreground">({product.reviewCount} ulasan)</span>
-                </div>
+                </a>
               ) : (
                 <span className="flex items-center gap-1 text-muted-foreground">
                   <Star className="size-4" /> Belum ada ulasan
@@ -186,9 +186,6 @@ export default function ProductDetailContainer({ slug }: { slug: string }) {
               <TabsTrigger value="spesifikasi" className="flex-none px-4">
                 Spesifikasi
               </TabsTrigger>
-              <TabsTrigger value="ulasan" className="flex-none px-4">
-                Ulasan ({product.reviewCount})
-              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="deskripsi" className="pt-4">
@@ -215,10 +212,6 @@ export default function ProductDetailContainer({ slug }: { slug: string }) {
                   </div>
                 ))}
               </Card>
-            </TabsContent>
-
-            <TabsContent value="ulasan" className="pt-4">
-              <ReviewsSection slug={slug} />
             </TabsContent>
           </Tabs>
         </div>
@@ -310,6 +303,14 @@ export default function ProductDetailContainer({ slug }: { slug: string }) {
             </div>
           </div>
         </Card>
+      </div>
+
+      {/* Reviews get their own full-width section rather than a third tab —
+          on Tokopedia's PDP this is the section shoppers actually scroll to
+          read before buying, so burying it behind a tab click undersells it. */}
+      <div id="ulasan" className="scroll-mt-24 space-y-3">
+        <SectionHeading>Ulasan Pembeli</SectionHeading>
+        <ReviewsSection slug={slug} />
       </div>
 
       {/* Sticky mobile add-to-cart bar — keeps the primary action within

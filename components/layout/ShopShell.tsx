@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import StorefrontHeader from "./StorefrontHeader";
 import StorefrontFooter from "./StorefrontFooter";
 import MobileBottomNav from "./MobileBottomNav";
+import ScrollToTopButton from "@/components/shared/ScrollToTopButton";
 
 // Full-bleed main so the landing page's hero/category sections can span
 // edge to edge — individual pages wrap their own content in a max-w
@@ -20,6 +21,9 @@ export default function ShopShell({ children }: { children: React.ReactNode }) {
       </div>
       <div className="print:hidden">
         <MobileBottomNav />
+      </div>
+      <div className="print:hidden">
+        <ScrollToTopButton />
       </div>
     </div>
   );

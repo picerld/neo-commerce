@@ -3,7 +3,6 @@
 import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { AlertTriangle, FileText, ImageOff, RefreshCw, Wallet, XCircle } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
@@ -17,13 +16,13 @@ import { useCancelOrder } from "../api/cancelOrder";
 import { useSyncPayment } from "../api/syncPayment";
 import { useMidtransSnap } from "@/app/features/checkout/hooks/useMidtransSnap";
 import OrderStatusBadge from "./OrderStatusBadge";
+import OrderTimeline from "./OrderTimeline";
 import type { OrderStatus } from "../types/order.type";
 
 const SNAP_EMBED_ID = "midtrans-embed";
 const INVOICE_STATUSES: OrderStatus[] = ["paid", "processing", "shipped", "completed", "refunded"];
 
 export default function OrderDetailContainer({ orderId }: { orderId: string }) {
-  const router = useRouter();
   const { data: order, isLoading } = useGetOrder(orderId);
   const { embed, isReady } = useMidtransSnap();
   const [confirmCancel, setConfirmCancel] = React.useState(false);
@@ -68,14 +67,22 @@ export default function OrderDetailContainer({ orderId }: { orderId: string }) {
     embeddedTokenRef.current = snapToken;
     setEmbedError(false);
     embed(snapToken, SNAP_EMBED_ID, {
-      onSuccess: () => router.refresh(),
-      onPending: () => router.refresh(),
+      // `router.refresh()` only re-runs server components — this page's
+      // order data is entirely client-fetched via React Query, so it never
+      // touched the stale data on screen. Worse, Midtrans's webhook can't
+      // reach a localhost dev server, so our own DB row isn't updated yet
+      // either at the moment Snap reports success. Pull status the same way
+      // the manual "Cek status pembayaran" button does — it hits Midtrans's
+      // API directly and writes the real status before refetching.
+      onSuccess: () => syncMutation.mutate(order.id),
+      onPending: () => syncMutation.mutate(order.id),
       onError: () => {
         toast.error("Pembayaran gagal, silakan coba lagi");
         setEmbedError(true);
       },
     });
-  }, [canPay, isReady, snapToken, embed, router]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [canPay, isReady, snapToken, embed, order?.id]);
 
   if (isLoading || !order) {
     return (
@@ -98,6 +105,15 @@ export default function OrderDetailContainer({ orderId }: { orderId: string }) {
             <p className="text-sm text-muted-foreground">{new Date(order.createdAt).toLocaleString("id-ID")}</p>
           </CardContent>
         </Card>
+
+        <div className="space-y-3">
+          <SectionHeading>Status Pesanan</SectionHeading>
+          <Card className="rounded-2xl p-5">
+            <CardContent className="px-0">
+              <OrderTimeline status={order.status} />
+            </CardContent>
+          </Card>
+        </div>
 
         {paymentFailed && (
           <Card className="rounded-2xl border-destructive/30 bg-destructive/5 p-5">

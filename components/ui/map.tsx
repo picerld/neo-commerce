@@ -26,6 +26,18 @@ import { X, Minus, Plus, Locate, Maximize, Loader2 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
+// Turbopack's bundling of maplibre-gl's internal `new Worker(new URL(...),
+// import.meta.url)` call resolves to a broken URL (the worker ends up
+// pointed at the current page instead of its script, so it dies
+// immediately and vector tiles never decode — the map sits on its loading
+// spinner forever). Pointing MapLibre at the CDN-hosted worker bundle
+// (jsDelivr serves it with the CORS headers a module worker needs)
+// sidesteps the bundler issue entirely. Version must track the installed
+// `maplibre-gl` version in package.json.
+if (typeof window !== "undefined") {
+  MapLibreGL.setWorkerUrl("https://cdn.jsdelivr.net/npm/maplibre-gl@6.3.0/dist/maplibre-gl-worker.mjs");
+}
+
 const defaultStyles = {
   dark: "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json",
   light: "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json",

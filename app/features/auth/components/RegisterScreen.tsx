@@ -36,11 +36,14 @@ export default function RegisterScreen() {
   return (
     <div className="mx-auto w-full max-w-sm animate-fade-in-up">
       <div className="mb-8 text-center">
+        <span className="animate-pop-in mb-3 inline-flex size-12 items-center justify-center rounded-2xl border-2 border-primary/25 bg-primary/10">
+          <UserPlus className="size-5 text-primary" />
+        </span>
         <h1 className="font-heading text-3xl font-extrabold tracking-tight">Daftar Akun</h1>
         <p className="mt-2 text-muted-foreground">Buat akun untuk mulai belanja.</p>
       </div>
 
-      <Card className="rounded-2xl p-6">
+      <Card className="rounded-3xl border-primary/30 p-6 shadow-[0_4px_0_0_var(--primary)]">
         <form
           className="space-y-6"
           onSubmit={async (event) => {

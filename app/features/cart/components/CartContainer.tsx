@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { toast } from "sonner";
-import { ImageOff, Minus, Plus, ShieldCheck, ShoppingBag, Trash2 } from "lucide-react";
+import { ImageOff, Minus, Plus, ShieldCheck, Trash2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -43,7 +43,7 @@ export default function CartContainer() {
     return (
       <Card>
         <EmptyState
-          icon={ShoppingBag}
+          illustration="/illustrations/empty-cart.svg"
           title="Keranjangmu masih kosong"
           description="Yuk mulai belanja dan temukan produk favoritmu."
           action={

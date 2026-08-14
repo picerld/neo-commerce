@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { ImageOff, Plus, Star } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { formatRupiah } from "@/lib/utils";
+import { cn, formatRupiah } from "@/lib/utils";
 import { useGetMe } from "@/app/features/auth/api/getMe";
 import { useAddToCart } from "@/app/features/cart/api/addToCart";
 import type { ProductSummary } from "../types/product.type";
@@ -62,8 +62,12 @@ export default function ProductCard({ product, isNew = false }: { product: Produ
           )}
           {!outOfStock && (
             <div className="absolute top-1.5 left-1.5 flex flex-col items-start gap-1">
+              {/* Solid fill (not the default soft-tint `destructive` variant used
+                  on app surfaces) — this badge sits directly on arbitrary photo
+                  pixels, same as the "Sisa {stock}" badge below, so it needs
+                  guaranteed contrast rather than a translucent wash. */}
               {hasDiscount && (
-                <Badge className="border-transparent bg-gradient-to-r from-destructive to-[#ff6b6b] text-destructive-foreground shadow-sm">
+                <Badge variant="destructive" className="bg-destructive text-destructive-foreground">
                   -{discountPercent}%
                 </Badge>
               )}
@@ -83,7 +87,7 @@ export default function ProductCard({ product, isNew = false }: { product: Produ
               onClick={handleQuickAdd}
               disabled={addToCartMutation.isPending}
               aria-label="Tambah cepat ke keranjang"
-              className="absolute right-1.5 bottom-1.5 flex size-8 items-center justify-center rounded-full border-2 border-primary bg-primary text-primary-foreground opacity-100 shadow-[0_2px_0_0_color-mix(in_oklab,var(--primary),black_18%)] transition-all duration-150 active:scale-90 active:shadow-none sm:opacity-0 sm:group-hover:opacity-100 sm:focus-visible:opacity-100 disabled:opacity-100"
+              className="absolute right-1.5 bottom-1.5 flex size-8 items-center justify-center rounded-full border-2 border-primary bg-primary text-primary-foreground shadow-[0_2px_0_0_color-mix(in_oklab,var(--primary),black_18%)] transition-transform duration-150 active:scale-90 active:shadow-none group-hover:scale-110"
             >
               <Plus className="size-3.5" />
             </button>
@@ -91,9 +95,12 @@ export default function ProductCard({ product, isNew = false }: { product: Produ
         </div>
         <CardContent className="space-y-1 px-2.5 pb-2.5">
           <p className="line-clamp-2 min-h-8 text-[13px] leading-tight font-medium text-foreground/90">{product.name}</p>
-          {hasDiscount && (
-            <p className="text-[11px] text-muted-foreground line-through">{formatRupiah(product.compareAtPrice!)}</p>
-          )}
+          {/* Reserves the strikethrough-price line's height even when there's
+              no discount, so cards without one don't end up shorter than
+              their neighbors in the same row/rail. */}
+          <p className={cn("min-h-[15px] text-[11px] text-muted-foreground", hasDiscount && "line-through")}>
+            {hasDiscount ? formatRupiah(product.compareAtPrice!) : " "}
+          </p>
           <p className="font-heading text-sm font-extrabold text-primary">{formatRupiah(product.price)}</p>
           <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
             {product.reviewCount > 0 && (

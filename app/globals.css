@@ -61,14 +61,14 @@
   --card-foreground: #12151f;
   --popover: #ffffff;
   --popover-foreground: #12151f;
-  --primary: #2563eb;
+  --primary: #23238f;
   --primary-foreground: #ffffff;
   --secondary: #dbeafe;
-  --secondary-foreground: #1e40af;
+  --secondary-foreground: #23238f;
   --muted: #eef1f6;
   --muted-foreground: #666f80;
   --accent: #dbeafe;
-  --accent-foreground: #1d4ed8;
+  --accent-foreground: #23238f;
   --destructive: #dc2626;
   --destructive-foreground: #ffffff;
   --success: #16a34a;
@@ -77,8 +77,8 @@
   --warning-foreground: #1a1523;
   --border: #e3e6ee;
   --input: #dfe3ed;
-  --ring: #2563eb;
-  --chart-1: #2563eb;
+  --ring: #23238f;
+  --chart-1: #23238f;
   --chart-2: #16a34a;
   --chart-3: #f59e0b;
   --chart-4: #ec4899;
@@ -86,12 +86,12 @@
   --radius: 0.9rem;
   --sidebar: #ffffff;
   --sidebar-foreground: #12151f;
-  --sidebar-primary: #2563eb;
+  --sidebar-primary: #23238f;
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #dbeafe;
-  --sidebar-accent-foreground: #1d4ed8;
+  --sidebar-accent-foreground: #23238f;
   --sidebar-border: #edeff5;
-  --sidebar-ring: #2563eb;
+  --sidebar-ring: #23238f;
 }
 
 .dark {
@@ -101,14 +101,14 @@
   --card-foreground: #eef1f8;
   --popover: #121a2c;
   --popover-foreground: #eef1f8;
-  --primary: #60a5fa;
+  --primary: #818cf8;
   --primary-foreground: #0a0f1c;
   --secondary: #1c2740;
-  --secondary-foreground: #bfdbfe;
+  --secondary-foreground: #c7d2fe;
   --muted: #18213470;
   --muted-foreground: #93a0b8;
   --accent: #1e3a5f;
-  --accent-foreground: #bfdbfe;
+  --accent-foreground: #c7d2fe;
   --destructive: #f87171;
   --destructive-foreground: #1a0505;
   --success: #4ade80;
@@ -117,20 +117,20 @@
   --warning-foreground: #241a06;
   --border: color-mix(in oklab, #ffffff 12%, transparent);
   --input: color-mix(in oklab, #ffffff 16%, transparent);
-  --ring: #60a5fa;
-  --chart-1: #60a5fa;
+  --ring: #818cf8;
+  --chart-1: #818cf8;
   --chart-2: #4ade80;
   --chart-3: #fbbf24;
   --chart-4: #f472b6;
   --chart-5: #22d3ee;
   --sidebar: #0e1626;
   --sidebar-foreground: #eef1f8;
-  --sidebar-primary: #60a5fa;
+  --sidebar-primary: #818cf8;
   --sidebar-primary-foreground: #0a0f1c;
   --sidebar-accent: #1e3a5f;
-  --sidebar-accent-foreground: #bfdbfe;
+  --sidebar-accent-foreground: #c7d2fe;
   --sidebar-border: color-mix(in oklab, #ffffff 10%, transparent);
-  --sidebar-ring: #60a5fa;
+  --sidebar-ring: #818cf8;
 }
 
 @layer base {
@@ -226,6 +226,17 @@
 }
 .animate-pop-in {
   animation: pop-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* Gentle bob for playful decorative elements (hero mascot icon, sticker
+   badges) — deliberately subtle so it reads as "alive" rather than
+   distracting from the content next to it. */
+@keyframes float-y {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+.animate-float {
+  animation: float-y 3s ease-in-out infinite;
 }
 
 @keyframes shimmer-sweep {

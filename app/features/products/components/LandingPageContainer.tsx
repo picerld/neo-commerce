@@ -51,7 +51,7 @@ function ProductRail({
   return (
     <div className="animate-fade-in-up space-y-3">
       <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2.5">
+        <div className="flex min-w-0 items-center gap-2.5">
           <span className={cn("flex size-9 shrink-0 items-center justify-center rounded-xl sm:size-10", styles.iconBg)}>
             <Icon className={cn("size-4.5 sm:size-5", styles.iconColor)} />
           </span>

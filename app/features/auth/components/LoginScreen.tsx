@@ -42,11 +42,19 @@ export default function LoginScreen() {
   return (
     <div className="mx-auto w-full max-w-sm animate-fade-in-up">
       <div className="mb-8 text-center">
+        <span className="animate-pop-in mb-3 inline-flex size-12 items-center justify-center rounded-2xl border-2 border-primary/25 bg-primary/10">
+          <LogIn className="size-5 text-primary" />
+        </span>
         <h1 className="font-heading text-3xl font-extrabold tracking-tight">Masuk</h1>
         <p className="mt-2 text-muted-foreground">Masuk ke akun Neo Commerce kamu.</p>
       </div>
 
-      <Card className={cn("rounded-2xl p-6", shake && "animate-shake")}>
+      <Card
+        className={cn(
+          "rounded-3xl border-primary/30 p-6 shadow-[0_4px_0_0_var(--primary)]",
+          shake && "animate-shake",
+        )}
+      >
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-1.5">
             <Label htmlFor="email">Email</Label>

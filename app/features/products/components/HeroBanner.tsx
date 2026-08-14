@@ -1,80 +1,141 @@
 "use client";
 
+import * as React from "react";
 import Link from "next/link";
-import Image from "next/image";
-import { Sparkles, ShieldCheck, Truck, ImageOff } from "lucide-react";
-import { useGetProducts } from "../api/getProducts";
+import { Sparkles, ShieldCheck, Truck, ShoppingBag, Flame } from "lucide-react";
+import HeroStepper from "./HeroStepper";
 
 export default function HeroBanner() {
-  const { data: products } = useGetProducts();
-  const collage = (products ?? []).filter((p) => p.imageUrl).slice(0, 4);
-
   return (
-    <div className="grid animate-fade-in-up gap-3 md:grid-cols-3">
-      <div className="relative overflow-hidden rounded-3xl border-2 border-border/60 bg-gradient-to-br from-primary to-[color-mix(in_oklab,var(--primary),#7c3aed_35%)] p-6 text-primary-foreground shadow-[0_4px_0_0_color-mix(in_oklab,var(--primary),black_18%)] sm:p-10 md:col-span-2">
-        {/* Layered accent decoration — soft color blobs + dot-grid texture
-            behind the copy, so the banner reads as designed rather than a
-            flat color fill. Blobs sit outside the content's max-w column,
-            clipped by overflow-hidden on the panel. */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -top-16 -right-10 size-64 rounded-full bg-[#7c3aed]/40 blur-3xl"
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -bottom-20 right-16 size-56 rounded-full bg-[#ec4899]/30 blur-3xl"
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute top-1/2 -right-24 size-72 -translate-y-1/2 rounded-full bg-[#06b6d4]/20 blur-3xl"
-        />
-        <div aria-hidden className="bg-dot-grid pointer-events-none absolute inset-0 text-white/10" />
-        <div className="relative z-10 max-w-lg space-y-4">
-          <span className="animate-pop-in inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-xs font-bold uppercase tracking-wide backdrop-blur-sm">
-            <Sparkles className="size-3.5" /> Promo Hari Ini
-          </span>
-          <h1 className="font-heading text-2xl font-extrabold tracking-tight text-balance sm:text-3xl">
-            Belanja kebutuhanmu, bayar aman, sampai tepat waktu.
-          </h1>
-          <div className="flex flex-wrap gap-4 pt-2 text-sm font-semibold text-primary-foreground/90">
-            <span className="flex items-center gap-1.5">
-              <ShieldCheck className="size-4" /> Pembayaran via Midtrans
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Truck className="size-4" /> Gratis lacak pesanan
-            </span>
+    <div className="animate-fade-in-up space-y-3">
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-5 md:items-stretch">
+        <div className="relative min-w-0 md:col-span-2">
+          <div className="relative flex h-full flex-col justify-center overflow-hidden rounded-3xl border-2 border-primary/30 bg-card p-6 text-foreground shadow-[0_4px_0_0_var(--primary)] sm:p-10">
+            {/* Layered accent decoration — soft color blobs + dot-grid texture,
+                all drawn from theme tokens (not one-off hex) so the panel
+                stays a white surface with blue as an accent rather than a
+                flat color fill. Blobs sit outside the content's max-w column,
+                clipped by overflow-hidden on the panel. */}
+            <div aria-hidden className="bg-dot-grid pointer-events-none absolute inset-0 text-primary/8" />
+
+            {/* Floating mascot chip — a little bounce of personality tucked
+                into the corner so the panel doesn't just read as a flat
+                marketing slab. */}
+            <div
+              aria-hidden
+              className="animate-float pointer-events-none absolute top-6 right-6 hidden size-14 items-center justify-center rounded-2xl border-2 border-primary/25 bg-primary/10 sm:flex"
+            >
+              <ShoppingBag className="size-6 -rotate-6 text-primary" />
+            </div>
+
+            <div className="relative z-10 max-w-lg space-y-4">
+              <span className="animate-pop-in inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1 text-xs font-bold uppercase tracking-wide text-primary-foreground">
+                <Sparkles className="size-3.5" /> Promo Hari Ini
+              </span>
+              <h1 className="font-heading text-2xl font-extrabold tracking-tight text-balance sm:text-3xl">
+                Belanja kebutuhanmu, bayar aman,{" "}
+                <span className="relative inline-block whitespace-nowrap">
+                  sampai tepat waktu
+                  <span aria-hidden className="absolute inset-x-0 -bottom-0.5 -z-10 h-3 -rotate-1 bg-primary/25 sm:h-3.5" />
+                </span>
+                .
+              </h1>
+              <div className="flex flex-wrap gap-4 pt-2 text-sm font-semibold text-muted-foreground">
+                <span className="flex items-center gap-1.5">
+                  <ShieldCheck className="size-4 text-primary" /> Pembayaran via Midtrans
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <Truck className="size-4 text-primary" /> Gratis lacak pesanan
+                </span>
+              </div>
+            </div>
           </div>
+
+          {/* Sticker badge overlapping the panel's edge — lives on this
+              overflow-visible wrapper (not the panel itself, which needs
+              overflow-hidden to clip its blur blobs) so it can poke past the
+              border like a physical sticker. */}
+          <div
+            className="animate-float absolute -top-3 -left-3 z-20 flex -rotate-6 items-center gap-1 rounded-xl border-2 border-primary/40 bg-card px-2.5 py-1.5 text-xs font-extrabold text-foreground shadow-[0_3px_0_0_var(--primary)] sm:-top-4 sm:-left-4 sm:px-3 sm:py-2 sm:text-sm"
+          >
+            <Flame className="size-3.5 text-primary sm:size-4" /> Diskon s/d 40%
+          </div>
+        </div>
+
+        {/* Numbered "why shop here" steps — lives in the hero itself instead
+            of a separate section further down, so trust-building is part of
+            the first impression rather than something a visitor has to
+            scroll to find. */}
+        <div className="min-w-0 md:col-span-3">
+          <HeroStepper />
         </div>
       </div>
 
-      {/* Product-photo collage — real catalog imagery instead of a second
-          flat color block, so the hero doesn't read as pure solid blue. */}
-      <div className="grid grid-cols-2 grid-rows-2 gap-3">
-        {collage.length > 0
-          ? collage.map((product) => (
-              <Link
-                key={product.id}
-                href={`/products/${product.slug}`}
-                className="press-shadow group relative overflow-hidden rounded-2xl border-2 border-border/60 bg-muted shadow-[0_3px_0_0_var(--border)]"
-              >
-                <Image
-                  src={product.imageUrl!}
-                  alt={product.name}
-                  fill
-                  className="object-cover transition-transform duration-200 group-hover:scale-105"
-                  unoptimized
-                />
-                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-2">
-                  <p className="line-clamp-1 text-[11px] font-semibold text-white">{product.name}</p>
-                </div>
-              </Link>
-            ))
-          : Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="flex items-center justify-center rounded-2xl border-2 border-border/60 bg-muted text-muted-foreground shadow-[0_3px_0_0_var(--border)]">
-                <ImageOff className="size-5" />
-              </div>
-            ))}
+      <FlashSaleTicker />
+    </div>
+  );
+}
+
+function getMsUntilMidnight() {
+  const now = new Date();
+  const midnight = new Date(now);
+  midnight.setHours(24, 0, 0, 0);
+  return Math.max(0, midnight.getTime() - now.getTime());
+}
+
+/** Starts at null so the server-rendered markup and the first client render
+ * match exactly — the real countdown only kicks in after mount, avoiding a
+ * hydration mismatch from a clock value computed twice a moment apart. */
+function useMidnightCountdown() {
+  const [remainingMs, setRemainingMs] = React.useState<number | null>(null);
+
+  React.useEffect(() => {
+    const id = setInterval(() => setRemainingMs(getMsUntilMidnight()), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  return remainingMs;
+}
+
+function TimeBox({ value }: { value: number }) {
+  return (
+    <span className="flex size-7 items-center justify-center rounded-md border-2 border-border bg-foreground font-mono text-xs font-extrabold text-background sm:size-8 sm:text-sm">
+      {String(value).padStart(2, "0")}
+    </span>
+  );
+}
+
+function FlashSaleTicker() {
+  const remainingMs = useMidnightCountdown();
+  const totalSeconds = Math.floor((remainingMs ?? 0) / 1000);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  return (
+    <div className="press-shadow flex flex-wrap items-center justify-between gap-3 rounded-2xl border-2 border-primary/30 bg-card px-4 py-3 shadow-[0_3px_0_0_var(--primary)] sm:px-6">
+      <div className="flex min-w-0 items-center gap-2.5">
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary text-white">
+          <Flame className="size-4.5" />
+        </span>
+        <div className="min-w-0">
+          <p className="font-heading text-sm font-extrabold tracking-tight text-foreground sm:text-base">Flash Sale Hari Ini</p>
+          <p className="truncate text-xs text-muted-foreground">Diskon terbaik berakhir tengah malam</p>
+        </div>
       </div>
+      <div className="flex items-center gap-1.5" aria-label="Sisa waktu flash sale">
+        <TimeBox value={hours} />
+        <span className="font-extrabold text-primary">:</span>
+        <TimeBox value={minutes} />
+        <span className="font-extrabold text-primary">:</span>
+        <TimeBox value={seconds} />
+      </div>
+      <Link
+        href="/search?sort=terlaris"
+        className="press-shadow shrink-0 rounded-full border-2 border-primary bg-primary px-4 py-1.5 text-xs font-bold whitespace-nowrap text-primary-foreground hover:bg-primary/90"
+      >
+        Serbu Sekarang
+      </Link>
     </div>
   );
 }
